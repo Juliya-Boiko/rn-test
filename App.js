@@ -1,10 +1,13 @@
 import * as SplashScreen from 'expo-splash-screen';
 import * as Font from 'expo-font';
+import { NavigationContainer } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, View, Platform } from 'react-native';
-import { RegistrationScreen } from './screens/auth/RegistrationScreen';
-import { LoginScreen } from './screens/auth/LoginScreen';
+
+// import { Home } from './screens/Home';
+
+import { useRoute } from './routes/routing';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -19,6 +22,7 @@ const loadApplication = async () => {
 export default function App() {
   console.log(Platform.OS);
   const [appIsReady, setAppIsReady] = useState(false);
+  const routing = useRoute(false);
 
   useEffect(() => {
     async function prepare() {
@@ -47,8 +51,9 @@ export default function App() {
 
   return (
     <View style={styles.container} onLayout={onLayoutRootView}>
-      {/* <RegistrationScreen /> */}
-      <LoginScreen />
+      <NavigationContainer>
+        {routing}
+      </NavigationContainer>
       <StatusBar style="dark" />
     </View>
   );

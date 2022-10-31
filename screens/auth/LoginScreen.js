@@ -1,5 +1,5 @@
 import { TouchableWithoutFeedback, Keyboard, ImageBackground, KeyboardAvoidingView, View, Text, TextInput,
-  TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+  TouchableOpacity, StyleSheet, Platform, Dimensions, Button } from 'react-native';
 import { useState, useEffect } from 'react';
 
 const initialState = {
@@ -7,7 +7,7 @@ const initialState = {
   password: ''
 };
 
-export const LoginScreen = () => { 
+export const LoginScreen = ({ navigation }) => { 
   const [isKeyboardShown, setIsKeyboardShown] = useState(false);
   const [userState, setUserState] = useState(initialState);
   const [dimensions, setDimensions] = useState(Dimensions.get('window').width);
@@ -56,7 +56,7 @@ export const LoginScreen = () => {
             <TouchableOpacity style={styles.btn} onPress={submitHandler}>
               <Text style={styles.btnText}>Увійти</Text>
             </TouchableOpacity>
-             <Text style={styles.link}>Немає акаунта? Зареєструватися</Text>
+            <Button title='Немає акаунта? Зареєструватися' style={styles.link} color={'#1B4371'} onPress={() => navigation.navigate('Registration')} />
           </View>
         </KeyboardAvoidingView>
       </ImageBackground>
@@ -111,6 +111,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: 'Roboto-400',
     fontSize: 16,
-    color: '#1B4371',
+   // color: '#1B4371',
   }
 });
