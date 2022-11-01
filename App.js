@@ -4,9 +4,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, View, Platform } from 'react-native';
-
-// import { Home } from './screens/Home';
-
 import { useRoute } from './routes/routing';
 
 SplashScreen.preventAutoHideAsync();
@@ -22,7 +19,7 @@ const loadApplication = async () => {
 export default function App() {
   console.log(Platform.OS);
   const [appIsReady, setAppIsReady] = useState(false);
-  const routing = useRoute(false);
+  const routing = useRoute(true);
 
   useEffect(() => {
     async function prepare() {
