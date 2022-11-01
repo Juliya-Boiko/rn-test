@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Text, View, TouchableOpacity, StyleSheet, TextInput } from "react-native";
 import * as Location from 'expo-location';
-import { Camera, CameraType } from 'expo-camera';
+import { Camera } from 'expo-camera';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 
 const initialState = {
@@ -14,8 +14,6 @@ const initialState = {
 export const CreatePostsScreen = ({ navigation }) => {
   const [post, setPost] = useState(initialState);
   const [camera, setCamera] = useState(null);
-  //const [photo, setPhoto] = useState('');
-  //const [location, setLocation] = useState(null);
   const [status, requestPermission] = Camera.useCameraPermissions();
 
   const takePhoto = async () => {
@@ -24,18 +22,15 @@ export const CreatePostsScreen = ({ navigation }) => {
     const photo = await camera.takePictureAsync();
     const location = await Location.getCurrentPositionAsync();
     setPost((prevState) => ({...prevState, location: location, photo: photo}))
-    //setPhoto(photo.uri);
-    //setLocation(location.coords);
   };
 
   const publishPhoto = () => {
-   // console.log(post);
     navigation.navigate('DefaultScreen', { post });
+    setPost(initialState);
   };
 
   return (
     <View style={styles.container}>
-      {/* <Text>CreatePostsScreen</Text> */}
       <Camera style={styles.camera} ref={setCamera}>
         <TouchableOpacity style={styles.cameraBtn} onPress={takePhoto}>
           <AntDesign name="camera" color='#BDBDBD' size={20} />
@@ -60,11 +55,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 16,
-    //justifyContent: 'center',
-   // backgroundColor: '#FF6C00',
   },
   camera: {
-    //flex: 1,
     marginBottom: 32,
     height: 240,
     justifyContent: 'center',

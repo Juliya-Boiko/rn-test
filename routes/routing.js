@@ -38,7 +38,10 @@ export const useRoute = (isAuth) => {
         component={PostsScreen} />
       <NavTab.Screen
         options={{
-          //header: () => null,
+          headerLeft: () =>
+            <TouchableOpacity style={styles.logout} onPress={() => console.log('add navigation')}>
+              <MaterialIcons name="arrow-back" color='#212121' size={24} />
+            </TouchableOpacity>,
           tabBarShowLabel: false, 
           tabBarIcon: ({ focused }) => <View style={styles.accentIcon}><Ionicons name="add" color='#fff' size={24} /></View>
         }}
@@ -67,7 +70,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   logout: {
-   // backgroundColor: 'red',
     paddingHorizontal: 10
   }
 });

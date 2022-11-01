@@ -1,4 +1,4 @@
-import { FlatList, View, Image, StyleSheet, Button, Text, TouchableOpacity } from "react-native";
+import { FlatList, View, Image, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { useState, useEffect } from "react";
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 
@@ -10,11 +10,6 @@ export const DefaultPostsScreen = ({ route, navigation }) => {
       setPosts(prevState => [...prevState, route.params]);
     }
   }, [route.params]);
-  
-  const mapHandler = () => {
-    navigation.navigate('Map');
-    //console.log(data);
-  };
 
   const commentsHandler = () => {
     navigation.navigate('Comments');
@@ -42,9 +37,6 @@ export const DefaultPostsScreen = ({ route, navigation }) => {
       }
     />
   );
-  
-  //console.log(route.params);
-  //return <Text>PostsScreen</Text>
 };
 
 const styles = StyleSheet.create({
