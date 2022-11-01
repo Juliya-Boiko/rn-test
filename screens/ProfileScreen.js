@@ -20,7 +20,6 @@ const styles = StyleSheet.create({
     flex: 1,
     resizeMode: 'cover',
     paddingTop: 150
-    //justifyContent: 'flex-end',
   },
   profile: {
     position: 'relative',

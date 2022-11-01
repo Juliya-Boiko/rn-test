@@ -10,13 +10,8 @@ export const PostsScreen = ({ route }) => {
   return (
     <NestedNav.Navigator>
       <NestedNav.Screen options={{header: () => null}} name='DefaultScreen' component={DefaultPostsScreen} />
-
       <NestedNav.Screen options={{header: () => null}} name='Map' component={MapScreen} />
-
       <NestedNav.Screen options={{header: () => null}} name='Comments' component={CommentsScreen} />
     </NestedNav.Navigator>
   );
 };
-
-// const styles = StyleSheet.create({
-// });
