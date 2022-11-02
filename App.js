@@ -5,6 +5,8 @@ import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, View, Platform } from 'react-native';
 import { useRoute } from './routes/routing';
+import { Provider } from 'react-redux';
+import { store } from './redux/store';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -19,7 +21,7 @@ const loadApplication = async () => {
 export default function App() {
   console.log(Platform.OS);
   const [appIsReady, setAppIsReady] = useState(false);
-  const routing = useRoute(true);
+  const routing = useRoute(false);
 
   useEffect(() => {
     async function prepare() {
@@ -54,6 +56,8 @@ export default function App() {
       <StatusBar style="dark" />
     </View>
   );
+
+  // <Provider store={store}></Provider>
 }
 
 const styles = StyleSheet.create({
