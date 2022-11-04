@@ -1,6 +1,9 @@
 import { TouchableWithoutFeedback, Keyboard, ImageBackground, KeyboardAvoidingView, View, Text, TextInput,
   TouchableOpacity, StyleSheet, Platform, Dimensions, Button } from 'react-native';
 import { useState, useEffect } from 'react';
+import { useDispatch } from "react-redux";
+import { loginUser } from '../../redux/auth/authOperations';
+import { setUser } from '../../redux/auth/authSlice';
 
 const initialState = {
   email: '',
@@ -11,6 +14,7 @@ export const LoginScreen = ({ navigation }) => {
   const [isKeyboardShown, setIsKeyboardShown] = useState(false);
   const [userState, setUserState] = useState(initialState);
   const [dimensions, setDimensions] = useState(Dimensions.get('window').width);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const onChange = () => {
@@ -26,10 +30,11 @@ export const LoginScreen = ({ navigation }) => {
     Keyboard.dismiss();
   };
 
-  const submitHandler = () => {
+  const submitHandler = async () => {
     keyboardHide();
-    console.log(userState);
-    setUserState(initialState);
+    const user = await loginUser(userState);
+    dispatch(setUser({ login: user.displayName, id: user.uid }));
+    //console.log("LOGIN ---->", user);
   };
 
   return (

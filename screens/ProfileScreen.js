@@ -1,12 +1,23 @@
 import { Text, ImageBackground, StyleSheet, View, Image, TouchableOpacity } from "react-native";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { useDispatch } from "react-redux";
+import { deleteUser } from "../redux/auth/authSlice";
+import { logoutUser } from "../redux/auth/authOperations";
 
 export const ProfileScreen = () => {
+  const dispatch = useDispatch();
+
+  const logoutHandler = () => {
+    logoutUser();
+    //console.log('logoutHandler ---->');
+    dispatch(deleteUser());
+  };
+
   return (
     <ImageBackground style={styles.image} source={require('../assets/images/bg-register.jpg')}>
       <View style={styles.profile}>
         <Image source={require('../assets/images/userPhoto.png')} style={styles.userPhoto} />
-        <TouchableOpacity style={styles.logout} onPress={() => console.log('LOGOUT!!!!!')}>
+        <TouchableOpacity style={styles.logout} onPress={logoutHandler}>
           <MaterialIcons name="logout" color='#BDBDBD' size={24} />
         </TouchableOpacity>
         <Text style={styles.userName}>userName</Text>

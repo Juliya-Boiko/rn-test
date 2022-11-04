@@ -1,8 +1,9 @@
 import { TouchableWithoutFeedback, Keyboard, ImageBackground, KeyboardAvoidingView, View, Text, TextInput,
   TouchableOpacity, StyleSheet, Platform, Dimensions, Button } from 'react-native';
 import { useState, useEffect } from 'react';
-import { auth } from '../../firebase/config';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { registerUser } from '../../redux/auth/authOperations';
+import { useDispatch } from "react-redux";
+import { setUser } from '../../redux/auth/authSlice';
 
 const initialState = {
   login: '',
@@ -14,6 +15,7 @@ export const RegistrationScreen = ({ navigation }) => {
   const [isKeyboardShown, setIsKeyboardShown] = useState(false);
   const [userState, setUserState] = useState(initialState);
   const [dimensions, setDimensions] = useState(Dimensions.get('window').width);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const onChange = () => {
@@ -29,19 +31,11 @@ export const RegistrationScreen = ({ navigation }) => {
     Keyboard.dismiss();
   };
 
-  const submitHandler = () => {
+  const submitHandler = async () => {
     keyboardHide();
-    //console.log(userState);
-    createUserWithEmailAndPassword(auth, userState.email, userState.password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        console.log(user);
-      })
-      .catch((error) => {
-        //const errorCode = error.code;
-        //const errorMessage = error.message;
-        console.log(error.message);
-      });
+    const user = await registerUser(userState);
+    dispatch(setUser({ login: user.displayName, id: user.uid }));
+    //console.log("READY SET TO REDUX -------> ", user.displayName);
   };
 
   return (

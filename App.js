@@ -1,12 +1,11 @@
 import * as SplashScreen from 'expo-splash-screen';
 import * as Font from 'expo-font';
-import { NavigationContainer } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, View, Platform } from 'react-native';
-import { useRoute } from './routes/routing';
 import { Provider } from 'react-redux';
 import { store } from './redux/store';
+import { Main } from './components/Main';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -19,9 +18,8 @@ const loadApplication = async () => {
 };
 
 export default function App() {
-  console.log(Platform.OS);
+  console.log("APP", Platform.OS);
   const [appIsReady, setAppIsReady] = useState(false);
-  const routing = useRoute(false);
 
   useEffect(() => {
     async function prepare() {
@@ -34,7 +32,6 @@ export default function App() {
         setAppIsReady(true);
       }
     }
-
     prepare();
   }, []);
 
@@ -51,15 +48,11 @@ export default function App() {
   return (
     <Provider store={store}>
       <View style={styles.container} onLayout={onLayoutRootView}>
-        <NavigationContainer>
-          {routing}
-        </NavigationContainer>
+        <Main />
         <StatusBar style="dark" />
       </View>
     </Provider>
   );
-
-  
 }
 
 const styles = StyleSheet.create({

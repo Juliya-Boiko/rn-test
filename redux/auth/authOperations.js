@@ -1,34 +1,32 @@
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, signOut } from "firebase/auth";
+import { auth } from "../../firebase/config";
 
-export const loginUser = ({ email, password }) => async (dispatch, getState) => {
+export const registerUser = async ({ login, email, password }) => {
   try {
-    const auth = getAuth();
-    await signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        console.log(user);
-      })
+    await createUserWithEmailAndPassword(auth, email, password);
+    await updateProfile(auth.currentUser, { displayName: login });
+    const user = await auth.currentUser;
+    return user;
   } catch (error) {
-    console.log(error);
+    console.log(error.message); 
   }
 };
 
-export const registerUser = ({ login, email, password }) => async (dispatch, getState) => {
+export const loginUser = async ({ email, password }) => {
   try {
-    const auth = getAuth();
-    await createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        console.log(user);
-      })
+    await signInWithEmailAndPassword(auth, email, password);
+    const user = await auth.currentUser;
+    return user;
   } catch (error) {
-    console.log(error);
+    console.log(error.message); 
   }
 };
 
-export const logoutUser = () => async (dispatch, getState) => {
+export const logoutUser = async () => {
   try {
-    
+    await signOut(auth).then(() => {
+      console.log('LOGOUT SUCCESS')
+    });
   } catch (error) {
     console.log(error);
   }
