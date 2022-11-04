@@ -49,15 +49,17 @@ export default function App() {
   }
 
   return (
-    <View style={styles.container} onLayout={onLayoutRootView}>
-      <NavigationContainer>
-        {routing}
-      </NavigationContainer>
-      <StatusBar style="dark" />
-    </View>
+    <Provider store={store}>
+      <View style={styles.container} onLayout={onLayoutRootView}>
+        <NavigationContainer>
+          {routing}
+        </NavigationContainer>
+        <StatusBar style="dark" />
+      </View>
+    </Provider>
   );
 
-  // <Provider store={store}></Provider>
+  
 }
 
 const styles = StyleSheet.create({

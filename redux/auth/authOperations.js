@@ -1,6 +1,6 @@
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 
-export const loginUser = ({ login, email, password }) => async (dispatch, getState) => {
+export const loginUser = ({ email, password }) => async (dispatch, getState) => {
   try {
     const auth = getAuth();
     await signInWithEmailAndPassword(auth, email, password)
@@ -13,7 +13,7 @@ export const loginUser = ({ login, email, password }) => async (dispatch, getSta
   }
 };
 
-export const registerUser = () => async (dispatch, getState) => {
+export const registerUser = ({ login, email, password }) => async (dispatch, getState) => {
   try {
     const auth = getAuth();
     await createUserWithEmailAndPassword(auth, email, password)
