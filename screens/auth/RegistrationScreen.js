@@ -1,7 +1,8 @@
 import { TouchableWithoutFeedback, Keyboard, ImageBackground, KeyboardAvoidingView, View, Text, TextInput,
   TouchableOpacity, StyleSheet, Platform, Dimensions, Button } from 'react-native';
 import { useState, useEffect } from 'react';
-//import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from '../../firebase/config';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 
 const initialState = {
   login: '',
@@ -13,7 +14,6 @@ export const RegistrationScreen = ({ navigation }) => {
   const [isKeyboardShown, setIsKeyboardShown] = useState(false);
   const [userState, setUserState] = useState(initialState);
   const [dimensions, setDimensions] = useState(Dimensions.get('window').width);
-  //const dispatch = useDispatch();
 
   useEffect(() => {
     const onChange = () => {
@@ -29,20 +29,19 @@ export const RegistrationScreen = ({ navigation }) => {
     Keyboard.dismiss();
   };
 
-  const submitHandler = async () => {
+  const submitHandler = () => {
     keyboardHide();
     //console.log(userState);
-    // const auth = getAuth();
-    // await createUserWithEmailAndPassword(auth, userState.email, userState.password)
-    //   .then((userCredential) => {
-    //     const user = userCredential.user;
-    //     console.log(user);
-    //   })
-    //   .catch((error) => {
-    //     //const errorCode = error.code;
-    //     //const errorMessage = error.message;
-    //     console.log(error.message);
-    //   });
+    createUserWithEmailAndPassword(auth, userState.email, userState.password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        console.log(user);
+      })
+      .catch((error) => {
+        //const errorCode = error.code;
+        //const errorMessage = error.message;
+        console.log(error.message);
+      });
   };
 
   return (
