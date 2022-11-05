@@ -1,29 +1,47 @@
-import { Text, View, Image, FlatList, StyleSheet } from "react-native";
+import { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
+import { Text, TextInput, View, Image, FlatList, TouchableOpacity, StyleSheet } from "react-native";
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { db } from '../../firebase/config';
+import { doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
 
-const commentsMock = [
-  { photo: '',
-    name: 'Comentator Name',
-    text: 'Really love your most recent photo. Ive been trying to capture the same thing for a few months and would love some tips!',
-    date: '09 июня, 2020 | 08:40', },
-  { photo: '',
-    name: 'User',
-    text: 'A fast 50mm like f1.8 would help with the bokeh. Ive been using primes as they tend to get a bit sharper images.',
-    date: '09 июня, 2020 | 09:14', },
-  { photo: '',
-    name: 'Comentator Name',
-    text: 'Thank you! That was very helpful!',
-    date: '09 июня, 2020 | 09:20', },
-];
+export const CommentsScreen = ({ route }) => {
+  const postId = route.params.postId;
+  const [photo, setPhoto] = useState(null);
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState('');
+  const name = useSelector(state => state.auth.user.login);
 
-export const CommentsScreen = () => {
+  useEffect(() => {
+    getCurrentPost();
+  }, []);
+
+  const getCurrentPost = async () => {
+    const docRef = doc(db, "posts", postId);
+    const data = await (await getDoc(docRef)).data();
+    setPhoto(data.photo);
+    setComments(data.comments);
+  };
+
+  const submitHandler = async () => {
+    const data = {
+      name: name,
+      text: newComment,
+      date: `${new Date().getDate()}-${new Date().getMonth()}-${new Date().getFullYear()}`,
+    } 
+    const docRef = doc(db, "posts", postId);
+    await updateDoc(docRef, {
+      comments: arrayUnion(data),
+    });
+  };
 
   return (
     <View style={styles.container}>
-      <Image source={require('../../assets/images/photo.png')} style={styles.postImage} />
+      <Image source={{ uri:photo }} style={styles.postImage} />
       
       <FlatList
-        // style={styles.container}
-        data={commentsMock}
+        style={styles.container}
+        data={comments}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) =>
           <View style={styles.comment}>
@@ -35,9 +53,20 @@ export const CommentsScreen = () => {
           </View>
         }
       />
-
-
-
+      <View style={styles.bottomBlock}>
+        <View style={styles.commentField}>
+          <TextInput
+            placeholder='Коментувати...'
+            placeholderTextColor='#BDBDBD'
+            style={styles.input}
+            value={newComment}
+            onChangeText={(value) => setNewComment(value)} 
+          />
+          <TouchableOpacity style={styles.btn} onPress={submitHandler}>
+            <Ionicons name="arrow-up" color='#ffffff' size={14}/>
+          </TouchableOpacity>
+        </View>
+      </View>
     </View>
   );
 };
@@ -45,7 +74,7 @@ export const CommentsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
+    //alignItems: 'center',
     paddingTop: 32,
     paddingHorizontal: 16,
     paddingBottom: 16,
@@ -53,6 +82,7 @@ const styles = StyleSheet.create({
   },
   postImage: {
     height: 240,
+    alignSelf: 'center',
     marginBottom: 32,
     borderRadius: 8,
   },
@@ -86,4 +116,34 @@ const styles = StyleSheet.create({
     lineHeight: 12,
     color: '#BDBDBD',
   },
+  commentField: {
+    position: 'relative'
+  },
+  input: {
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    fontFamily: 'Roboto-400',
+    fontSize: 16,
+    borderWidth: 1,
+    borderColor: '#E8E8E8',
+    borderRadius: 100,
+    backgroundColor: '#F6F6F6',
+    color: '#212121'
+  },
+  btn: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    width: 34,
+    height: 34,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 17,
+    backgroundColor: '#FF6C00',
+  },
+  bottomBlock: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    //backgroundColor: 'red'
+  }
 });

@@ -3,10 +3,8 @@ import MapView, { Marker } from 'react-native-maps';
 
 export const MapScreen = ({ route }) => {
   const marker = route.params.location.coords;
-  //console.log(route.params.location.coords);
 
   return (
-
     <View style={styles.container}>
       <MapView
         style={styles.mapContainer}

@@ -9,18 +9,20 @@ export const DefaultPostsScreen = ({ navigation }) => {
 
   useEffect(() => {
     getAllPosts();
-    console.log(posts);
+    //console.log(posts);
   }, []);
 
   const getAllPosts = async () => {
     const data = await getDocs(collection(db, "posts"));
     const items = [];
-    data.forEach((doc) => { items.push(doc.data()) });
+    data.forEach((doc) => {
+      const item = {
+        id: doc.id,
+        ...doc.data(),
+      }
+      items.push(item);
+    });
     setPosts(items);
-  };
-
-  const commentsHandler = () => {
-    navigation.navigate('Comments');
   };
 
   return (
@@ -33,7 +35,7 @@ export const DefaultPostsScreen = ({ navigation }) => {
           <Image source={{ uri: item.photo }} style={styles.postImage} />
           <Text style={styles.postTitle}>{item.title}</Text>
           <View style={styles.postDetails}>
-            <TouchableOpacity onPress={commentsHandler}>
+            <TouchableOpacity onPress={() => navigation.navigate('Comments', { postId: item.id })} >
               <EvilIcons name="comment" color='#BDBDBD' size={24}/>
             </TouchableOpacity>
             <View style={styles.location}>
