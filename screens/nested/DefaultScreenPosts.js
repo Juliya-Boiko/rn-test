@@ -1,15 +1,23 @@
 import { FlatList, View, Image, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { useState, useEffect } from "react";
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
+import { collection, getDocs } from "firebase/firestore"; 
+import { db } from '../../firebase/config';
 
-export const DefaultPostsScreen = ({ route, navigation }) => {
+export const DefaultPostsScreen = ({ navigation }) => {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    if (route.params) {
-      setPosts(prevState => [...prevState, route.params]);
-    }
-  }, [route.params]);
+    getAllPosts();
+    console.log(posts);
+  }, []);
+
+  const getAllPosts = async () => {
+    const data = await getDocs(collection(db, "posts"));
+    const items = [];
+    data.forEach((doc) => { items.push(doc.data()) });
+    setPosts(items);
+  };
 
   const commentsHandler = () => {
     navigation.navigate('Comments');
@@ -22,15 +30,15 @@ export const DefaultPostsScreen = ({ route, navigation }) => {
       keyExtractor={(item, index) => index.toString()}
       renderItem={({ item }) =>
         <View style={styles.postItem}>
-          <Image source={{ uri: item.post.photo.uri }} style={styles.postImage} />
-          <Text style={styles.postTitle}>{item.post.title}</Text>
+          <Image source={{ uri: item.photo }} style={styles.postImage} />
+          <Text style={styles.postTitle}>{item.title}</Text>
           <View style={styles.postDetails}>
             <TouchableOpacity onPress={commentsHandler}>
               <EvilIcons name="comment" color='#BDBDBD' size={24}/>
             </TouchableOpacity>
             <View style={styles.location}>
               <EvilIcons name="location" color='#BDBDBD' size={24} style={styles.locationIcon} />
-              <Text style={styles.locationText} onPress={() => navigation.navigate('Map', { item })}>Location</Text>
+              <Text style={styles.locationText} onPress={() => navigation.navigate('Map', { location: item.location })}>Location</Text>
             </View>
           </View>
         </View>

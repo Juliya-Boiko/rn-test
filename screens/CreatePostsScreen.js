@@ -4,6 +4,11 @@ import { Text, View, TouchableOpacity, StyleSheet, TextInput } from "react-nativ
 import * as Location from 'expo-location';
 import { Camera } from 'expo-camera';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import { v4 as uuidv4 } from 'uuid';
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage, db } from '../firebase/config';
+import { collection, addDoc } from "firebase/firestore";
+import { useSelector } from 'react-redux';
 
 const initialState = {
   photo: '',
@@ -15,17 +20,49 @@ export const CreatePostsScreen = ({ navigation }) => {
   const [post, setPost] = useState(initialState);
   const [camera, setCamera] = useState(null);
   const [status, requestPermission] = Camera.useCameraPermissions();
+  const userId = useSelector(state => state.auth.user.id);  
 
   const takePhoto = async () => {
     requestPermission(true);
     await Location.requestForegroundPermissionsAsync();
     const photo = await camera.takePictureAsync();
     const location = await Location.getCurrentPositionAsync();
-    setPost((prevState) => ({...prevState, location: location, photo: photo}))
+    setPost((prevState) => ({ ...prevState, location: location, photo: photo }));
   };
 
-  const publishPhoto = () => {
-    navigation.navigate('DefaultScreen', { post });
+  const uploadPhotoToServer = async () => {
+    const response = await fetch(post.photo.uri);
+    const blob = await response.blob();
+    const uniqueId = uuidv4();
+    const storageRef = ref(storage, `postsImages/${uniqueId}`);
+    try {
+      await uploadBytes(storageRef, blob).then((snapshot) => {
+      });
+    } catch (error) {
+      console.log(error.message);
+    }
+    const data = await getDownloadURL(ref(storage, storageRef));
+    return data;
+  };
+
+  const uploadPostToserver = async () => {
+    const data = await uploadPhotoToServer();
+    try {
+      const docRef = await addDoc(collection(db, "posts"), {
+        userId: userId,
+        photo: data,
+        title: post.title,
+        location: post.location
+      });
+       // console.log("Document written with ID: -----> ", docRef.id);
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  };
+
+  const submitHandler = () => {
+    uploadPostToserver();
+    navigation.navigate('DefaultScreen');
     setPost(initialState);
   };
 
@@ -44,7 +81,7 @@ export const CreatePostsScreen = ({ navigation }) => {
         value={post.title}
         onChangeText={(value) => setPost((prevState) => ({ ...prevState, title: value }))} 
       />
-      <TouchableOpacity style={styles.publishBtn} onPress={publishPhoto}>
+      <TouchableOpacity style={styles.publishBtn} onPress={submitHandler}>
         <Text style={styles.publishBtnText}>Опублікувати</Text>
       </TouchableOpacity>
     </View>
