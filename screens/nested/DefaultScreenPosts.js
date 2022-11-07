@@ -1,8 +1,7 @@
-import { FlatList, View, Image, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { useState, useEffect } from "react";
-import EvilIcons from 'react-native-vector-icons/EvilIcons';
-import { collection, getDocs } from "firebase/firestore"; 
 import { db } from '../../firebase/config';
+import { collection, getDocs } from "firebase/firestore"; 
+import { List } from '../../components/common/List';
 
 export const DefaultPostsScreen = ({ navigation }) => {
   const [posts, setPosts] = useState([]);
@@ -21,88 +20,10 @@ export const DefaultPostsScreen = ({ navigation }) => {
       }
       items.push(item);
     });
-    //console.log('items ----> ', items)
     setPosts(items);
   };
 
-  const commetsAmount = (obj) => {
-    if (obj.comments) {
-      return obj.comments.length;
-    }
-    return 0;
-  };
-
   return (
-    <FlatList
-      style={styles.container}
-      data={posts}
-      keyExtractor={(item, index) => index.toString()}
-      renderItem={({ item }) =>
-        <View style={styles.postItem}>
-          <Image source={{ uri: item.photo }} style={styles.postImage} />
-          <Text style={styles.postTitle}>{item.title}</Text>
-          <View style={styles.postDetails}>
-            <TouchableOpacity style={styles.comments} onPress={() => navigation.navigate('Comments', { postId: item.id, photo: item.photo })} >
-              <EvilIcons style={styles.commentsIcon} name="comment" color='#BDBDBD' size={24} />
-              <Text style={styles.commentsText}>{commetsAmount(item)}</Text>
-            </TouchableOpacity>
-            <View style={styles.location}>
-              <EvilIcons name="location" color='#BDBDBD' size={24} style={styles.locationIcon} />
-              <Text style={styles.locationText} onPress={() => navigation.navigate('Map', { location: item.location })}>{item.location.reversedLocation}</Text>
-            </View>
-          </View>
-        </View>
-      }
-    />
+    <List data={posts} navigation={navigation} />
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 32,
-    paddingHorizontal: 16,
-    backgroundColor: '#fff',
-  },
-  postItem: {
-    justifyContent: 'center',
-    marginBottom: 32,
-  },
-  postImage: {
-    height: 240,
-    marginBottom: 8,
-    borderRadius: 8,
-  },
-  postTitle: {
-    marginBottom: 8,
-    fontFamily: 'Roboto-500',
-    fontSize: 16,
-    color: '#212121',
-  },
-  postDetails: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  location: {
-    flexDirection: 'row',
-  },
-  locationIcon: {
-    marginRight: 4,
-  },
-  locationText: {
-    fontFamily: 'Roboto-400',
-    fontSize: 16,
-    color: '#212121',
-    textDecorationLine: 'underline'
-  },
-  comments: {
-    flexDirection: 'row',
-    alignItems: 'center'
-  },
-  commentsIcon: {
-    marginRight: 6,
-  },
-  commentsText: {
-    color: '#BDBDBD',
-  }
-});

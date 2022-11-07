@@ -1,12 +1,9 @@
-import { createStackNavigator } from '@react-navigation/stack';
+import { NestedNav } from '../routes/navigators';
 import { DefaultPostsScreen } from './nested/DefaultScreenPosts';
 import { CommentsScreen } from './nested/CommentsScreen';
 import { MapScreen } from './nested/MapScreen';
 
-const NestedNav = createStackNavigator();
-
-export const PostsScreen = ({ route }) => {
-
+export const PostsScreen = () => {
   return (
     <NestedNav.Navigator>
       <NestedNav.Screen options={{header: () => null}} name='DefaultScreen' component={DefaultPostsScreen} />
