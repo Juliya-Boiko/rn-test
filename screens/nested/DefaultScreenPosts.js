@@ -9,7 +9,6 @@ export const DefaultPostsScreen = ({ navigation }) => {
 
   useEffect(() => {
     getAllPosts();
-    //console.log(posts);
   }, []);
 
   const getAllPosts = async () => {
@@ -22,6 +21,7 @@ export const DefaultPostsScreen = ({ navigation }) => {
       }
       items.push(item);
     });
+    console.log('items ----> ', items)
     setPosts(items);
   };
 
@@ -40,7 +40,7 @@ export const DefaultPostsScreen = ({ navigation }) => {
             </TouchableOpacity>
             <View style={styles.location}>
               <EvilIcons name="location" color='#BDBDBD' size={24} style={styles.locationIcon} />
-              <Text style={styles.locationText} onPress={() => navigation.navigate('Map', { location: item.location })}>Location</Text>
+              <Text style={styles.locationText} onPress={() => navigation.navigate('Map', { location: item.location })}>{item.location.reversedLocation}</Text>
             </View>
           </View>
         </View>

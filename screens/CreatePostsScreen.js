@@ -4,6 +4,7 @@ import { Text, View, TouchableOpacity, StyleSheet, TextInput } from "react-nativ
 import * as Location from 'expo-location';
 import { Camera } from 'expo-camera';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage, db } from '../firebase/config';
@@ -12,7 +13,10 @@ import { useSelector } from 'react-redux';
 
 const initialState = {
   photo: '',
-  location: '',
+  location: {
+    coords: null,
+    reversedLocation: ''
+  },
   title: ''
 }
 
@@ -27,7 +31,13 @@ export const CreatePostsScreen = ({ navigation }) => {
     await Location.requestForegroundPermissionsAsync();
     const photo = await camera.takePictureAsync();
     const location = await Location.getCurrentPositionAsync();
-    setPost((prevState) => ({ ...prevState, location: location, photo: photo }));
+    const { latitude, longitude } = location.coords;
+    let response = await Location.reverseGeocodeAsync({
+      latitude,
+      longitude
+    });
+    const reversedLocation = response[0].city;
+    setPost((prevState) => ({ ...prevState, location: { coords: {...location.coords}, reversedLocation: reversedLocation }, photo: photo }));
   };
 
   const uploadPhotoToServer = async () => {
@@ -48,19 +58,19 @@ export const CreatePostsScreen = ({ navigation }) => {
   const uploadPostToserver = async () => {
     const data = await uploadPhotoToServer();
     try {
-      const docRef = await addDoc(collection(db, "posts"), {
+      await addDoc(collection(db, "posts"), {
         userId: userId,
         photo: data,
         title: post.title,
         location: post.location
       });
-       // console.log("Document written with ID: -----> ", docRef.id);
     } catch (e) {
       console.error("Error adding document: ", e);
     }
   };
 
-  const submitHandler = () => {
+  const submitHandler = async () => {
+    //console.log(post);
     uploadPostToserver();
     navigation.navigate('DefaultScreen');
     setPost(initialState);
