@@ -7,19 +7,18 @@ import { doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
 
 export const CommentsScreen = ({ route }) => {
   const postId = route.params.postId;
-  const [photo, setPhoto] = useState(null);
+  const image = route.params.photo;
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const name = useSelector(state => state.auth.user.login);
 
   useEffect(() => {
-    getCurrentPost();
+    getComments();
   }, []);
 
-  const getCurrentPost = async () => {
+  const getComments = async () => {
     const docRef = doc(db, "posts", postId);
     const data = await (await getDoc(docRef)).data();
-    setPhoto(data.photo);
     setComments(data.comments);
   };
 
@@ -37,7 +36,7 @@ export const CommentsScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <Image source={{ uri:photo }} style={styles.postImage} />
+      <Image source={{ uri: image }} style={styles.postImage} />
       
       <FlatList
         style={styles.container}

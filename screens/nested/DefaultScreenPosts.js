@@ -35,7 +35,7 @@ export const DefaultPostsScreen = ({ navigation }) => {
           <Image source={{ uri: item.photo }} style={styles.postImage} />
           <Text style={styles.postTitle}>{item.title}</Text>
           <View style={styles.postDetails}>
-            <TouchableOpacity onPress={() => navigation.navigate('Comments', { postId: item.id })} >
+            <TouchableOpacity onPress={() => navigation.navigate('Comments', { postId: item.id, photo: item.photo })} >
               <EvilIcons name="comment" color='#BDBDBD' size={24}/>
             </TouchableOpacity>
             <View style={styles.location}>
