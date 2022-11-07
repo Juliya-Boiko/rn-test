@@ -32,6 +32,7 @@ export const CommentsScreen = ({ route }) => {
     await updateDoc(docRef, {
       comments: arrayUnion(data),
     });
+    setNewComment('');
   };
 
   return (

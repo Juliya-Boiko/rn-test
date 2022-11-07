@@ -31,7 +31,7 @@ export const ProfileScreen = () => {
       }
       items.push(item);
     });
-    //console.log('items ---->', items);
+    console.log('items ---->', items);
     setPosts(items);
   };
 
@@ -68,7 +68,7 @@ export const ProfileScreen = () => {
                 </View>
                 <View style={styles.location}>
                   <EvilIcons name="location" color='#BDBDBD' size={24} style={styles.locationIcon} />
-                  <Text style={styles.locationText} onPress={() => navigation.navigate('Map', { location: item.location })}>Location</Text>
+                  <Text style={styles.locationText} onPress={() => navigation.navigate('Map', { location: item.location })}>{item.location.reversedLocation}</Text>
                 </View>
               </View>
             </View>

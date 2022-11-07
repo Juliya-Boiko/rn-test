@@ -21,8 +21,15 @@ export const DefaultPostsScreen = ({ navigation }) => {
       }
       items.push(item);
     });
-    console.log('items ----> ', items)
+    //console.log('items ----> ', items)
     setPosts(items);
+  };
+
+  const commetsAmount = (obj) => {
+    if (obj.comments) {
+      return obj.comments.length;
+    }
+    return 0;
   };
 
   return (
@@ -35,8 +42,9 @@ export const DefaultPostsScreen = ({ navigation }) => {
           <Image source={{ uri: item.photo }} style={styles.postImage} />
           <Text style={styles.postTitle}>{item.title}</Text>
           <View style={styles.postDetails}>
-            <TouchableOpacity onPress={() => navigation.navigate('Comments', { postId: item.id, photo: item.photo })} >
-              <EvilIcons name="comment" color='#BDBDBD' size={24}/>
+            <TouchableOpacity style={styles.comments} onPress={() => navigation.navigate('Comments', { postId: item.id, photo: item.photo })} >
+              <EvilIcons style={styles.commentsIcon} name="comment" color='#BDBDBD' size={24} />
+              <Text style={styles.commentsText}>{commetsAmount(item)}</Text>
             </TouchableOpacity>
             <View style={styles.location}>
               <EvilIcons name="location" color='#BDBDBD' size={24} style={styles.locationIcon} />
@@ -87,4 +95,14 @@ const styles = StyleSheet.create({
     color: '#212121',
     textDecorationLine: 'underline'
   },
+  comments: {
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  commentsIcon: {
+    marginRight: 6,
+  },
+  commentsText: {
+    color: '#BDBDBD',
+  }
 });
