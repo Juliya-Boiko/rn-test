@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
-import { db } from '../../firebase/config';
-import { collection, getDocs } from "firebase/firestore"; 
 import { List } from '../../components/common/List';
+import { getPosts } from '../../firebase/get/getPosts';
 
 export const DefaultPostsScreen = ({ navigation }) => {
   const [posts, setPosts] = useState([]);
@@ -11,15 +10,7 @@ export const DefaultPostsScreen = ({ navigation }) => {
   }, []);
 
   const getAllPosts = async () => {
-    const data = await getDocs(collection(db, "posts"));
-    const items = [];
-    data.forEach((doc) => {
-      const item = {
-        id: doc.id,
-        ...doc.data(),
-      }
-      items.push(item);
-    });
+    const items = await getPosts();
     setPosts(items);
   };
 

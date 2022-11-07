@@ -4,7 +4,7 @@ import { Camera } from 'expo-camera';
 import { View, TouchableOpacity, StyleSheet, TextInput } from "react-native";
 import { PrimaryBtn } from "../components/common/PrimaryBtn";
 import { getLocation } from '../services/getLocation';
-import { uploadPostToserver } from "../services/uploadPostToServer";
+import { uploadPost } from "../firebase/upload/uploadPost";
 import { colors } from "../styles/colors";
 import AntDesign from 'react-native-vector-icons/AntDesign';
 
@@ -31,7 +31,7 @@ export const CreatePostsScreen = ({ navigation }) => {
   };
 
   const submitHandler = async () => {
-    await uploadPostToserver(post, userId);
+    await uploadPost(post, userId);
     setPost(initialState);
     navigation.navigate('DefaultScreen');
   };

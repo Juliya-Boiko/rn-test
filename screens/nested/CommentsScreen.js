@@ -1,69 +1,61 @@
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Text, TextInput, View, Image, FlatList, TouchableOpacity, StyleSheet } from "react-native";
+import { getComments } from "../../firebase/get/getComments";
+import { uploadComment } from "../../firebase/upload/uploadComment";
+import { getCurrentDate } from "../../services/getCurrentDate";
+import { colors } from "../../styles/colors";
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { db } from '../../firebase/config';
-import { doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
 
 export const CommentsScreen = ({ route }) => {
-  const postId = route.params.postId;
-  const image = route.params.photo;
+  const { postId, image } = route.params;
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const name = useSelector(state => state.auth.user.login);
 
   useEffect(() => {
-    getComments();
+    getAllComments();
   }, []);
 
-  const getComments = async () => {
-    const docRef = doc(db, "posts", postId);
-    const data = await (await getDoc(docRef)).data();
-    setComments(data.comments);
+  const getAllComments = async () => {
+    const items = await getComments(postId);
+    setComments(items);
   };
 
   const submitHandler = async () => {
-    const data = {
-      name: name,
-      text: newComment,
-      date: `${new Date().getDate()}-${new Date().getMonth()}-${new Date().getFullYear()}`,
-    } 
-    const docRef = doc(db, "posts", postId);
-    await updateDoc(docRef, {
-      comments: arrayUnion(data),
-    });
+    await uploadComment({ name, text: newComment, date: getCurrentDate()}, postId);
     setNewComment('');
   };
 
   return (
     <View style={styles.container}>
-      <Image source={{ uri: image }} style={styles.postImage} />
+      <Image source={{ uri: image }} style={styles.image} />
       
       <FlatList
-        style={styles.container}
+        //style={styles.container}
         data={comments}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) =>
           <View style={styles.comment}>
-            <Image source={require('../../assets/images/commentMock.png')} style={styles.commentImage} />
-            <View style={styles.commentDetails}>
-              <Text style={styles.commentText}>{item.text}</Text>
-              <Text style={styles.commentDate}>{item.date}</Text>
+            <Image source={require('../../assets/images/commentMock.png')} style={styles.thumb} />
+            <View style={styles.commentData}>
+              <Text style={styles.text}>{item.text}</Text>
+              <Text style={styles.date}>{item.date}</Text>
             </View>
           </View>
         }
       />
-      <View style={styles.bottomBlock}>
-        <View style={styles.commentField}>
+      <View style={styles.label}>
+        <View style={styles.area}>
           <TextInput
             placeholder='Коментувати...'
-            placeholderTextColor='#BDBDBD'
+            placeholderTextColor={colors.lightGray}
             style={styles.input}
             value={newComment}
             onChangeText={(value) => setNewComment(value)} 
           />
           <TouchableOpacity style={styles.btn} onPress={submitHandler}>
-            <Ionicons name="arrow-up" color='#ffffff' size={14}/>
+            <Ionicons name="arrow-up" color={colors.white} size={14}/>
           </TouchableOpacity>
         </View>
       </View>
@@ -74,13 +66,12 @@ export const CommentsScreen = ({ route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    //alignItems: 'center',
     paddingTop: 32,
     paddingHorizontal: 16,
     paddingBottom: 16,
-    backgroundColor: '#fff',
+    backgroundColor: colors.white,
   },
-  postImage: {
+  image: {
     height: 240,
     alignSelf: 'center',
     marginBottom: 32,
@@ -91,32 +82,36 @@ const styles = StyleSheet.create({
     width: 300,
     marginBottom: 24,
   },
-  commentImage: {
+  thumb: {
     width: 28,
     height: 28,
     marginRight: 16,
   },
-  commentDetails: {
+  commentData: {
     flex: 1,
     paddingHorizontal: 16,
     paddingVertical: 16,
-    backgroundColor: '#E8E8E8',
+    backgroundColor: colors.input.border,
   },
-  commentText: {
+  text: {
     marginBottom: 8,
     fontFamily: 'Roboto-400',
     fontSize: 13,
     lineHeight: 18,
-    color: '#212121',
+    color: colors.black,
   },
-  commentDate: {
+  date: {
     textAlign: "right",
     fontFamily: 'Roboto-400',
     fontSize: 10,
     lineHeight: 12,
-    color: '#BDBDBD',
+    color: colors.lightGray,
   },
-  commentField: {
+  label: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  area: {
     position: 'relative'
   },
   input: {
@@ -125,10 +120,10 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto-400',
     fontSize: 16,
     borderWidth: 1,
-    borderColor: '#E8E8E8',
+    borderColor: colors.input.border,
     borderRadius: 100,
-    backgroundColor: '#F6F6F6',
-    color: '#212121'
+    backgroundColor: colors.input.background,
+    color: colors.black
   },
   btn: {
     position: 'absolute',
@@ -139,11 +134,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 17,
-    backgroundColor: '#FF6C00',
+    backgroundColor: colors.orange,
   },
-  bottomBlock: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    //backgroundColor: 'red'
-  }
+
 });
