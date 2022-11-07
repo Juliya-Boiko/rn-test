@@ -1,15 +1,12 @@
-
 import { useState } from "react";
-import { Text, View, TouchableOpacity, StyleSheet, TextInput } from "react-native";
-import * as Location from 'expo-location';
-import { Camera } from 'expo-camera';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import 'react-native-get-random-values';
-import { v4 as uuidv4 } from 'uuid';
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { storage, db } from '../firebase/config';
-import { collection, addDoc } from "firebase/firestore";
 import { useSelector } from 'react-redux';
+import { Camera } from 'expo-camera';
+import { View, TouchableOpacity, StyleSheet, TextInput } from "react-native";
+import { PrimaryBtn } from "../components/common/PrimaryBtn";
+import { getLocation } from '../services/getLocation';
+import { uploadPostToserver } from "../services/uploadPostToServer";
+import { colors } from "../styles/colors";
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 const initialState = {
   photo: '',
@@ -26,74 +23,35 @@ export const CreatePostsScreen = ({ navigation }) => {
   const [status, requestPermission] = Camera.useCameraPermissions();
   const userId = useSelector(state => state.auth.user.id);  
 
-  const takePhoto = async () => {
+  const snapshotHandler = async () => {
     requestPermission(true);
-    await Location.requestForegroundPermissionsAsync();
     const photo = await camera.takePictureAsync();
-    const location = await Location.getCurrentPositionAsync();
-    const { latitude, longitude } = location.coords;
-    let response = await Location.reverseGeocodeAsync({
-      latitude,
-      longitude
-    });
-    const reversedLocation = response[0].city;
-    setPost((prevState) => ({ ...prevState, location: { coords: {...location.coords}, reversedLocation: reversedLocation }, photo: photo }));
-  };
-
-  const uploadPhotoToServer = async () => {
-    const response = await fetch(post.photo.uri);
-    const blob = await response.blob();
-    const uniqueId = uuidv4();
-    const storageRef = ref(storage, `postsImages/${uniqueId}`);
-    try {
-      await uploadBytes(storageRef, blob).then((snapshot) => {
-      });
-    } catch (error) {
-      console.log(error.message);
-    }
-    const data = await getDownloadURL(ref(storage, storageRef));
-    return data;
-  };
-
-  const uploadPostToserver = async () => {
-    const data = await uploadPhotoToServer();
-    try {
-      await addDoc(collection(db, "posts"), {
-        userId: userId,
-        photo: data,
-        title: post.title,
-        location: post.location
-      });
-    } catch (e) {
-      console.error("Error adding document: ", e);
-    }
+    const location = await getLocation();
+    setPost((prevState) => ({ ...prevState, location, photo }));
   };
 
   const submitHandler = async () => {
-    //console.log(post);
-    uploadPostToserver();
-    navigation.navigate('DefaultScreen');
+    await uploadPostToserver(post, userId);
     setPost(initialState);
+    navigation.navigate('DefaultScreen');
   };
 
   return (
     <View style={styles.container}>
       <Camera style={styles.camera} ref={setCamera}>
-        <TouchableOpacity style={styles.cameraBtn} onPress={takePhoto}>
-          <AntDesign name="camera" color='#BDBDBD' size={20} />
+        <TouchableOpacity style={styles.btn} onPress={snapshotHandler}>
+          <AntDesign name="camera" color={colors.lightGray} size={20} />
         </TouchableOpacity>
       </Camera>
       <TextInput
         placeholder='Назва'
-        placeholderTextColor='#BDBDBD'
+        placeholderTextColor={colors.lightGray}
         style={styles.input}
         //onFocus={() => setIsKeyboardShown(true)}
         value={post.title}
         onChangeText={(value) => setPost((prevState) => ({ ...prevState, title: value }))} 
       />
-      <TouchableOpacity style={styles.publishBtn} onPress={submitHandler}>
-        <Text style={styles.publishBtnText}>Опублікувати</Text>
-      </TouchableOpacity>
+      <PrimaryBtn title='Опублікувати' action={submitHandler} />
     </View>
   );
 };
@@ -101,6 +59,7 @@ export const CreatePostsScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: 16,
     paddingHorizontal: 16,
   },
   camera: {
@@ -110,32 +69,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 8
   },
-  cameraBtn: {
+  btn: {
     width: 60,
     height: 60,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: colors.white,
     borderRadius: 30,
   },
   input: {
     marginBottom: 32,
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#E8E8E8',
+    borderBottomColor: colors.input.border,
     fontFamily: 'Roboto-500',
     fontSize: 16,
-    color: '#212121',
+    color: colors.black,
   },
-  publishBtn: {
-    paddingVertical: 16,
-    borderRadius: 100,
-    backgroundColor: '#FF6C00',
-  },
-  publishBtnText: {
-    textAlign: 'center',
-    fontFamily: 'Roboto-400',
-    fontSize: 16,
-    color: '#fff'
-  }, 
 });
