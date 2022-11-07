@@ -2,10 +2,11 @@ import * as SplashScreen from 'expo-splash-screen';
 import * as Font from 'expo-font';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, View, Platform } from 'react-native';
 import { Provider } from 'react-redux';
 import { store } from './redux/store';
+import { View, Platform, StyleSheet } from 'react-native';
 import { Main } from './components/Main';
+import { colors } from './styles/colors';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -25,7 +26,6 @@ export default function App() {
     async function prepare() {
       try {
         await loadApplication();
-        await new Promise(resolve => setTimeout(resolve, 2000));
       } catch (e) {
         console.warn(e);
       } finally {
@@ -58,6 +58,6 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.white,
   },
 });
