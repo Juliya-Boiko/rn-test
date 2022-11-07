@@ -1,33 +1,29 @@
-import { View, StyleSheet, Text } from "react-native";
 import MapView, { Marker } from 'react-native-maps';
+import { View, StyleSheet } from "react-native";
+import { colors } from '../../styles/colors';
 
 export const MapScreen = ({ route }) => {
-  const marker = route.params.location.coords;
+  const { longitude, latitude } = route.params.location.coords;
 
   return (
     <View style={styles.container}>
       <MapView
-        style={styles.mapContainer}
-        initialRegion={{
-          longitude: marker.longitude,
-          latitude: marker.latitude,
-          latitudeDelta: 0.001,
-          longitudeDelta: 0.006
-        }}
+        style={styles.map}
+        initialRegion={{ longitude, latitude, latitudeDelta: 0.001, longitudeDelta: 0.006 }}
       >
-        <Marker coordinate={{ longitude: marker.longitude, latitude: marker.latitude }} title='PHOTO' />
+        <Marker coordinate={{ longitude, latitude }} title='PHOTO' />
       </MapView>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  mapContainer: {
-    flex: 1,
-  },
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#fff'
+    backgroundColor: colors.white
+  },
+  map: {
+    flex: 1,
   },
 });
