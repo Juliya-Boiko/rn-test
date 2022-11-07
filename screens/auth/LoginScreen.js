@@ -1,9 +1,11 @@
-import { TouchableWithoutFeedback, Keyboard, ImageBackground, KeyboardAvoidingView, View, Text, TextInput,
-  TouchableOpacity, StyleSheet, Platform, Dimensions, Button } from 'react-native';
+import { TouchableWithoutFeedback, Keyboard, ImageBackground, KeyboardAvoidingView, View, Text, StyleSheet, Platform, Dimensions, Button } from 'react-native';
 import { useState, useEffect } from 'react';
 import { useDispatch } from "react-redux";
 import { loginUser } from '../../redux/auth/authOperations';
 import { setUser } from '../../redux/auth/authSlice';
+import { Input } from '../../components/common/Input';
+import { PrimaryBtn } from '../../components/common/PrimaryBtn';
+import { colors } from '../../styles/colors';
 
 const initialState = {
   email: '',
@@ -34,7 +36,6 @@ export const LoginScreen = ({ navigation }) => {
     keyboardHide();
     const user = await loginUser(userState);
     dispatch(setUser({ login: user.displayName, id: user.uid }));
-    //console.log("LOGIN ---->", user);
   };
 
   return (
@@ -43,25 +44,18 @@ export const LoginScreen = ({ navigation }) => {
         <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}>
           <View style={{ ...styles.form, paddingBottom: isKeyboardShown ? 32 : 78, paddingHorizontal: dimensions > 500 ? 60 : 16 }}>
             <Text style={styles.title}>Увійти</Text>
-            <TextInput
-              placeholder='Адреса електронної пошти'
-              placeholderTextColor='#BDBDBD'
-              style={styles.input}
-              onFocus={() => setIsKeyboardShown(true)}
-              value={userState.email}
-              onChangeText={(value) => setUserState((prevState) => ({ ...prevState, email: value }))} />
-            <TextInput
-              placeholder='Пароль'
-              placeholderTextColor='#BDBDBD'
-              secureTextEntry={true}
-              style={{ ...styles.input, marginBottom: 43 }}
-              onFocus={() => setIsKeyboardShown(true)}
-              value={userState.password}
-              onChangeText={(value) => setUserState((prevState) => ({ ...prevState, password: value }))} />
-            <TouchableOpacity style={styles.btn} onPress={submitHandler}>
-              <Text style={styles.btnText}>Увійти</Text>
-            </TouchableOpacity>
-            <Button title='Немає акаунта? Зареєструватися' style={styles.link} color={'#1B4371'} onPress={() => navigation.navigate('Registration')} />
+            <Input
+              placeholder='Адреса електронної пошти' value={userState.email} secure={false}
+              focusAction={() => setIsKeyboardShown(true)}
+              changeTextAction={(value) => setUserState((prevState) => ({ ...prevState, email: value }))} />
+            <Input
+              placeholder='Пароль' value={userState.password} secure={true}
+              focusAction={() => setIsKeyboardShown(true)}
+              changeTextAction={(value) => setUserState((prevState) => ({ ...prevState, password: value }))} />
+            <PrimaryBtn action={submitHandler} title='Увійти'/>
+            <Button
+              title='Немає акаунта? Зареєструватися' style={styles.link}
+              color={colors.btn} onPress={() => navigation.navigate('Registration')} />
           </View>
         </KeyboardAvoidingView>
       </ImageBackground>
@@ -79,43 +73,19 @@ const styles = StyleSheet.create({
     paddingTop: 92,
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
-    backgroundColor: '#fff',
+    backgroundColor: colors.white,
   },
   title: {
     fontFamily: 'Roboto-700',
     fontSize: 30,
     lineHeight: 35,
     textAlign: 'center',
-    color: '#212121',
+    color: colors.black,
     marginBottom: 32
-  },
-  input: {
-    padding: 10,
-    marginBottom: 16,
-    fontFamily: 'Roboto-400',
-    fontSize: 16,
-    borderWidth: 1,
-    borderColor: '#E8E8E8',
-    backgroundColor: '#F6F6F6',
-    borderRadius: 6,
-    color: '#212121',
-  },
-  btn: {
-    marginBottom: 16,
-    paddingVertical: 16,
-    borderRadius: 100,
-    backgroundColor: '#FF6C00',
-  },
-  btnText: {
-    fontFamily: 'Roboto-400',
-    fontSize: 16,
-    textAlign: 'center',
-    color: '#fff',
   },
   link: {
     textAlign: 'center',
     fontFamily: 'Roboto-400',
     fontSize: 16,
-   // color: '#1B4371',
   }
 });
