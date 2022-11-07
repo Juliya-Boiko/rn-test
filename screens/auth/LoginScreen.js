@@ -1,10 +1,11 @@
-import { TouchableWithoutFeedback, Keyboard, ImageBackground, KeyboardAvoidingView, View, Text, StyleSheet, Platform, Dimensions, Button } from 'react-native';
+import { TouchableWithoutFeedback, Keyboard, ImageBackground, KeyboardAvoidingView, View, Text, Platform, Dimensions, Button } from 'react-native';
 import { useState, useEffect } from 'react';
 import { useDispatch } from "react-redux";
 import { loginUser } from '../../redux/auth/authOperations';
 import { setUser } from '../../redux/auth/authSlice';
 import { Input } from '../../components/common/Input';
 import { PrimaryBtn } from '../../components/common/PrimaryBtn';
+import { formStyles } from '../../styles/common/form';
 import { colors } from '../../styles/colors';
 
 const initialState = {
@@ -40,10 +41,10 @@ export const LoginScreen = ({ navigation }) => {
 
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
-      <ImageBackground style={styles.image} source={require('../../assets/images/bg-register.jpg')}>
+      <ImageBackground style={formStyles.image} source={require('../../assets/images/bg-register.jpg')}>
         <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}>
-          <View style={{ ...styles.form, paddingBottom: isKeyboardShown ? 32 : 78, paddingHorizontal: dimensions > 500 ? 60 : 16 }}>
-            <Text style={styles.title}>Увійти</Text>
+          <View style={{ ...formStyles.form, paddingBottom: isKeyboardShown ? 32 : 78, paddingHorizontal: dimensions > 500 ? 60 : 16 }}>
+            <Text style={formStyles.title}>Увійти</Text>
             <Input
               placeholder='Адреса електронної пошти' value={userState.email} secure={false}
               focusAction={() => setIsKeyboardShown(true)}
@@ -54,7 +55,7 @@ export const LoginScreen = ({ navigation }) => {
               changeTextAction={(value) => setUserState((prevState) => ({ ...prevState, password: value }))} />
             <PrimaryBtn action={submitHandler} title='Увійти'/>
             <Button
-              title='Немає акаунта? Зареєструватися' style={styles.link}
+              title='Немає акаунта? Зареєструватися' style={formStyles.link}
               color={colors.btn} onPress={() => navigation.navigate('Registration')} />
           </View>
         </KeyboardAvoidingView>
@@ -62,30 +63,3 @@ export const LoginScreen = ({ navigation }) => {
     </TouchableWithoutFeedback>
   );
 };
-
-const styles = StyleSheet.create({
-  image: {
-    flex: 1,
-    resizeMode: 'cover',
-    justifyContent: 'flex-end',
-  },
-  form: {
-    paddingTop: 92,
-    borderTopLeftRadius: 25,
-    borderTopRightRadius: 25,
-    backgroundColor: colors.white,
-  },
-  title: {
-    fontFamily: 'Roboto-700',
-    fontSize: 30,
-    lineHeight: 35,
-    textAlign: 'center',
-    color: colors.black,
-    marginBottom: 32
-  },
-  link: {
-    textAlign: 'center',
-    fontFamily: 'Roboto-400',
-    fontSize: 16,
-  }
-});

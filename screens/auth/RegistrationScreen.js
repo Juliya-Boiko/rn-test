@@ -1,9 +1,13 @@
-import { TouchableWithoutFeedback, Keyboard, ImageBackground, KeyboardAvoidingView, View, Text, TextInput,
-  TouchableOpacity, StyleSheet, Platform, Dimensions, Button } from 'react-native';
+import { TouchableWithoutFeedback, Keyboard, ImageBackground, KeyboardAvoidingView, View, Text,
+  Platform, Dimensions, Button } from 'react-native';
 import { useState, useEffect } from 'react';
 import { registerUser } from '../../redux/auth/authOperations';
 import { useDispatch } from "react-redux";
 import { setUser } from '../../redux/auth/authSlice';
+import { Input } from '../../components/common/Input';
+import { PrimaryBtn } from '../../components/common/PrimaryBtn';
+import { formStyles } from '../../styles/common/form';
+import { colors } from '../../styles/colors';
 
 const initialState = {
   login: '',
@@ -35,97 +39,31 @@ export const RegistrationScreen = ({ navigation }) => {
     keyboardHide();
     const user = await registerUser(userState);
     dispatch(setUser({ login: user.displayName, id: user.uid }));
-    //console.log("READY SET TO REDUX -------> ", user.displayName);
   };
 
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
-      <ImageBackground style={styles.image} source={require('../../assets/images/bg-register.jpg')}>
+      <ImageBackground style={formStyles.image} source={require('../../assets/images/bg-register.jpg')}>
         <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}>
-          <View style={{ ...styles.form, paddingBottom: isKeyboardShown ? 32 : 78, paddingHorizontal: dimensions > 500 ? 60 : 16 }}>
-            <Text style={styles.title}>Реєстрація</Text>
-            <TextInput
-              placeholder='Логін'
-              placeholderTextColor='#BDBDBD'
-              style={styles.input}
-              onFocus={() => setIsKeyboardShown(true)}
-              value={userState.login}
-              onChangeText={(value) => setUserState((prevState) => ({ ...prevState, login: value }))} />
-            <TextInput
-              placeholder='Адреса електронної пошти'
-              placeholderTextColor='#BDBDBD'
-              style={styles.input}
-              onFocus={() => setIsKeyboardShown(true)}
-              value={userState.email}
-              onChangeText={(value) => setUserState((prevState) => ({ ...prevState, email: value }))} />
-            <TextInput
-              placeholder='Пароль'
-              placeholderTextColor='#BDBDBD'
-              secureTextEntry={true}
-              style={{ ...styles.input, marginBottom: 43 }}
-              onFocus={() => setIsKeyboardShown(true)}
-              value={userState.password}
-              onChangeText={(value) => setUserState((prevState) => ({ ...prevState, password: value }))} />
-            <TouchableOpacity style={styles.btn} onPress={submitHandler}>
-              <Text style={styles.btnText}>Зареєструватися</Text>
-            </TouchableOpacity>
-            <Button title='Вже є акаунт? Увійти' style={styles.link} color={'#1B4371'} onPress={() => navigation.navigate('Login')} />
-
-             {/* <Text style={styles.link}>Вже є акаунт? Увійти</Text> */}
+          <View style={{ ...formStyles.form, paddingBottom: isKeyboardShown ? 32 : 78, paddingHorizontal: dimensions > 500 ? 60 : 16 }}>
+            <Text style={formStyles.title}>Реєстрація</Text>
+            <Input
+              placeholder='Логін' value={userState.login} secure={false}
+              focusAction={() => setIsKeyboardShown(true)}
+              changeTextAction={(value) => setUserState((prevState) => ({ ...prevState, login: value }))} />
+            <Input
+              placeholder='Адреса електронної пошти' value={userState.email} secure={false}
+              focusAction={() => setIsKeyboardShown(true)}
+              changeTextAction={(value) => setUserState((prevState) => ({ ...prevState, email: value }))} />
+            <Input
+              placeholder='Пароль' value={userState.password} secure={true}
+              focusAction={() => setIsKeyboardShown(true)}
+              changeTextAction={(value) => setUserState((prevState) => ({ ...prevState, password: value }))} />
+            <PrimaryBtn title='Зареєструватися' action={submitHandler}/>
+            <Button title='Вже є акаунт? Увійти' style={formStyles.link} color={colors.btn} onPress={() => navigation.navigate('Login')} />
           </View>
         </KeyboardAvoidingView>
       </ImageBackground>
     </TouchableWithoutFeedback>
   );
 };
-
-const styles = StyleSheet.create({
-  image: {
-    flex: 1,
-    resizeMode: 'cover',
-    justifyContent: 'flex-end',
-  },
-  form: {
-    paddingTop: 92,
-    borderTopLeftRadius: 25,
-    borderTopRightRadius: 25,
-    backgroundColor: '#fff',
-  },
-  title: {
-    fontFamily: 'Roboto-700',
-    fontSize: 30,
-    lineHeight: 35,
-    textAlign: 'center',
-    color: '#212121',
-    marginBottom: 32
-  },
-  input: {
-    padding: 10,
-    marginBottom: 16,
-    fontFamily: 'Roboto-400',
-    fontSize: 16,
-    borderWidth: 1,
-    borderColor: '#E8E8E8',
-    backgroundColor: '#F6F6F6',
-    borderRadius: 6,
-    color: '#212121',
-  },
-  btn: {
-    marginBottom: 16,
-    paddingVertical: 16,
-    borderRadius: 100,
-    backgroundColor: '#FF6C00',
-  },
-  btnText: {
-    fontFamily: 'Roboto-400',
-    fontSize: 16,
-    textAlign: 'center',
-    color: '#fff',
-  },
-  link: {
-    textAlign: 'center',
-    fontFamily: 'Roboto-400',
-    fontSize: 16,
-    color: '#1B4371',
-  }
-});
