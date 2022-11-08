@@ -8,4 +8,5 @@ export const colors = {
     background: '#F6F6F6',
   },
   btn: '#1B4371',
+  error: 'red',
 };

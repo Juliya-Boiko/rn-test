@@ -1,5 +1,4 @@
-import { TouchableWithoutFeedback, Keyboard, ImageBackground, KeyboardAvoidingView, View, Text,
-  Platform, Dimensions, Button } from 'react-native';
+import { TouchableWithoutFeedback, Keyboard, ImageBackground, KeyboardAvoidingView, View, Text, Platform, Dimensions, Button } from 'react-native';
 import { useState, useEffect } from 'react';
 import { registerUser } from '../../redux/auth/authOperations';
 import { useDispatch } from "react-redux";
@@ -8,18 +7,14 @@ import { Input } from '../../components/common/Input';
 import { PrimaryBtn } from '../../components/common/PrimaryBtn';
 import { formStyles } from '../../styles/common/form';
 import { colors } from '../../styles/colors';
-
-const initialState = {
-  login: '',
-  email: '',
-  password: ''
-};
+import { useForm } from 'react-hook-form';
+import * as validation from '../../services/validation';
 
 export const RegistrationScreen = ({ navigation }) => { 
   const [isKeyboardShown, setIsKeyboardShown] = useState(false);
-  const [userState, setUserState] = useState(initialState);
   const [dimensions, setDimensions] = useState(Dimensions.get('window').width);
   const dispatch = useDispatch();
+  const { handleSubmit, control, formState: { errors } } = useForm();
 
   useEffect(() => {
     const onChange = () => {
@@ -35,9 +30,9 @@ export const RegistrationScreen = ({ navigation }) => {
     Keyboard.dismiss();
   };
 
-  const submitHandler = async () => {
+  const handleRegister = async (data) => {
     keyboardHide();
-    const user = await registerUser(userState);
+    const user = await registerUser(data);
     dispatch(setUser({ login: user.displayName, id: user.uid }));
   };
 
@@ -48,18 +43,33 @@ export const RegistrationScreen = ({ navigation }) => {
           <View style={{ ...formStyles.form, paddingBottom: isKeyboardShown ? 32 : 78, paddingHorizontal: dimensions > 500 ? 60 : 16 }}>
             <Text style={formStyles.title}>Реєстрація</Text>
             <Input
-              placeholder='Логін' value={userState.login} secure={false}
-              focusAction={() => setIsKeyboardShown(true)}
-              changeTextAction={(value) => setUserState((prevState) => ({ ...prevState, login: value }))} />
+              control={control}
+              name='login'
+              placeholder='Логін'
+              rules={{
+                required: validation.message.require,
+                minLength: { value: 2, message: 'Мінімум 2 символи'},
+              }}
+              secure={false} />
             <Input
-              placeholder='Адреса електронної пошти' value={userState.email} secure={false}
-              focusAction={() => setIsKeyboardShown(true)}
-              changeTextAction={(value) => setUserState((prevState) => ({ ...prevState, email: value }))} />
+              control={control}
+              name='email'
+              placeholder='Адреса електронної пошти'
+              rules={{
+                required: validation.message.require,
+                pattern: { value: validation.EMAIL_REGEX, message: validation.message.notCorrect },
+              }}
+              secure={false} />
             <Input
-              placeholder='Пароль' value={userState.password} secure={true}
-              focusAction={() => setIsKeyboardShown(true)}
-              changeTextAction={(value) => setUserState((prevState) => ({ ...prevState, password: value }))} />
-            <PrimaryBtn title='Зареєструватися' action={submitHandler}/>
+              control={control}
+              name='password'
+              placeholder='Пароль'
+              rules={{
+                required: validation.message.require,
+                minLength: { value: 6, message: 'Мінімум 6 символів' },
+              }}
+              secure={true} />
+            <PrimaryBtn title='Зареєструватися' action={handleSubmit(handleRegister)}/>
             <Button title='Вже є акаунт? Увійти' style={formStyles.link} color={colors.btn} onPress={() => navigation.navigate('Login')} />
           </View>
         </KeyboardAvoidingView>

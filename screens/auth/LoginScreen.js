@@ -1,4 +1,4 @@
-import { TouchableWithoutFeedback, Keyboard, ImageBackground, KeyboardAvoidingView, View, Text, Platform, Dimensions, Button } from 'react-native';
+import { TouchableWithoutFeedback, Keyboard, ImageBackground, KeyboardAvoidingView, View, Text, Platform, Dimensions, Button, TextInput } from 'react-native';
 import { useState, useEffect } from 'react';
 import { useDispatch } from "react-redux";
 import { loginUser } from '../../redux/auth/authOperations';
@@ -7,17 +7,14 @@ import { Input } from '../../components/common/Input';
 import { PrimaryBtn } from '../../components/common/PrimaryBtn';
 import { formStyles } from '../../styles/common/form';
 import { colors } from '../../styles/colors';
-
-const initialState = {
-  email: '',
-  password: ''
-};
+import { useForm } from 'react-hook-form';
+import * as validation from '../../services/validation';
 
 export const LoginScreen = ({ navigation }) => { 
   const [isKeyboardShown, setIsKeyboardShown] = useState(false);
-  const [userState, setUserState] = useState(initialState);
   const [dimensions, setDimensions] = useState(Dimensions.get('window').width);
   const dispatch = useDispatch();
+  const { handleSubmit, control, formState: { errors } } = useForm();
 
   useEffect(() => {
     const onChange = () => {
@@ -33,9 +30,9 @@ export const LoginScreen = ({ navigation }) => {
     Keyboard.dismiss();
   };
 
-  const submitHandler = async () => {
+  const handleLogin = async (data) => {
     keyboardHide();
-    const user = await loginUser(userState);
+    const user = await loginUser(data);
     dispatch(setUser({ login: user.displayName, id: user.uid }));
   };
 
@@ -46,14 +43,24 @@ export const LoginScreen = ({ navigation }) => {
           <View style={{ ...formStyles.form, paddingBottom: isKeyboardShown ? 32 : 78, paddingHorizontal: dimensions > 500 ? 60 : 16 }}>
             <Text style={formStyles.title}>Увійти</Text>
             <Input
-              placeholder='Адреса електронної пошти' value={userState.email} secure={false}
-              focusAction={() => setIsKeyboardShown(true)}
-              changeTextAction={(value) => setUserState((prevState) => ({ ...prevState, email: value }))} />
+              control={control}
+              name='email'
+              placeholder='Адреса електронної пошти'
+              rules={{
+                required: validation.message.require,
+                pattern: { value: validation.EMAIL_REGEX, message: validation.message.notCorrect },
+              }}
+              secure={false} />
             <Input
-              placeholder='Пароль' value={userState.password} secure={true}
-              focusAction={() => setIsKeyboardShown(true)}
-              changeTextAction={(value) => setUserState((prevState) => ({ ...prevState, password: value }))} />
-            <PrimaryBtn action={submitHandler} title='Увійти'/>
+              control={control}
+              name='password'
+              placeholder='Пароль'
+              rules={{
+                required: validation.message.require,
+                minLength: { value: 6, message: 'Мінімум 6 символів' },
+              }}
+              secure={true} />
+            <PrimaryBtn action={handleSubmit(handleLogin)} title='Увійти'/>
             <Button
               title='Немає акаунта? Зареєструватися' style={formStyles.link}
               color={colors.btn} onPress={() => navigation.navigate('Registration')} />
