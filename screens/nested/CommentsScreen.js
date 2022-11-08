@@ -8,7 +8,7 @@ import { colors } from "../../styles/colors";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 export const CommentsScreen = ({ route }) => {
-  const { postId, image } = route.params;
+  const { postId, photo } = route.params;
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const name = useSelector(state => state.auth.user.login);
@@ -29,10 +29,9 @@ export const CommentsScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <Image source={{ uri: image }} style={styles.image} />
+      <Image source={{ uri: photo }} style={styles.image} />
       
       <FlatList
-        //style={styles.container}
         data={comments}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) =>
@@ -73,7 +72,6 @@ const styles = StyleSheet.create({
   },
   image: {
     height: 240,
-    alignSelf: 'center',
     marginBottom: 32,
     borderRadius: 8,
   },
