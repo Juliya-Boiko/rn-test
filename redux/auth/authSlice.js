@@ -5,7 +5,6 @@ const initialState = {
     id: null,
     login: '',
   },
-  //token: null,
   isLogged: false,
 };
 

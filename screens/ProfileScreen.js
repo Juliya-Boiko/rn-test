@@ -13,6 +13,8 @@ export const ProfileScreen = ({ navigation }) => {
   const name = useSelector(state => state.auth.user.login);
   const userId = useSelector(state => state.auth.user.id);
   const dispatch = useDispatch();
+  const user = useSelector(state => state.auth);
+  console.log(user);
   
   useEffect(() => {
     getAllUserPosts();
