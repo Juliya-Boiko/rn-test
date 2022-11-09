@@ -31,7 +31,7 @@ export const ProfileScreen = ({ navigation }) => {
   return (
     <ImageBackground style={styles.image} source={require('../assets/images/bg-register.jpg')}>
       <View style={styles.profile}>
-        <Image source={require('../assets/images/userPhoto.png')} style={styles.photo} />
+        <Image source={require('../assets/images/noPhoto.png')} style={styles.photo} />
         <TouchableOpacity style={styles.logout} onPress={logoutHandler}>
           <MaterialIcons name="logout" color={colors.lightGray} size={24} />
         </TouchableOpacity>
@@ -62,6 +62,8 @@ const styles = StyleSheet.create({
     left: '50%',
     transform: [{ translateX: -50 }],
     height: 120,
+    width: 120,
+    borderRadius: 16,
   },
   logout: {
     marginLeft: 'auto',
